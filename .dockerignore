@@ -2,3 +2,6 @@
 .github
 node_modules
 logs
+penpot/.git
+penpot/**/node_modules
+penpot/**/dist

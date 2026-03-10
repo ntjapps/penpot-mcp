@@ -1,7 +1,7 @@
 # penpot-mcp
 
 A Docker packaging layer for the [Penpot MCP Server](https://github.com/penpot/penpot/tree/develop/mcp).  
-Builds and runs the upstream Penpot MCP server and browser plugin in a single container, ready for local or remote deployment.
+This repository expects a local `penpot/` checkout from `https://github.com/penpot/penpot.git --branch mcp-prod --depth 1` and builds the upstream MCP workspace inside Docker.
 
 ---
 
@@ -20,7 +20,7 @@ Developer / debugging
   └─ REPL ──────────────────────► :4403  (Penpot API REPL)
 ```
 
-The entrypoint generates `manifest.json` at startup from environment variables so the plugin URL and WebSocket address are configurable without rebuilding the image.
+The image build runs the upstream `./scripts/setup` and `pnpm run bootstrap` flow inside Docker, and the container entrypoint starts the upstream MCP workspace with `pnpm run start` or `pnpm run start:multi-user`.
 
 ---
 
@@ -38,11 +38,14 @@ The entrypoint generates `manifest.json` at startup from environment variables s
 git clone https://github.com/<your-org>/penpot-mcp.git
 cd penpot-mcp
 
+# Clone the upstream Penpot source expected by this packaging repo
+git clone https://github.com/penpot/penpot.git --branch mcp-prod --depth 1 penpot
+
 # Build and start with Docker Compose
 docker compose up --build
 ```
 
-The first build clones and compiles the upstream Penpot MCP source tree — this may take several minutes.
+The first build installs dependencies and compiles the upstream Penpot MCP source tree inside the Docker build — this may take several minutes.
 
 Once running, load the plugin in Penpot:
 
@@ -84,9 +87,7 @@ All configuration is done through environment variables. Pass them via `docker r
 |---|---|---|
 | `PENPOT_MCP_PLUGIN_SERVER_LISTEN_ADDRESS` | Bind address for the plugin HTTP server | `0.0.0.0` |
 | `PENPOT_MCP_PLUGIN_PORT` | Plugin static server port | `4400` |
-| `PENPOT_MCP_PLUGIN_PUBLIC_URL` | Public URL Penpot uses to load the plugin | `http://localhost:4400` |
 | `PENPOT_MCP_PLUGIN_WEBSOCKET_URL` | WebSocket URL embedded in the plugin UI | `ws://localhost:4402` |
-| `PENPOT_MCP_WEBSOCKET_PROTOCOL` | Protocol used when computing WebSocket URL (`ws`/`wss`) | `ws` |
 
 ### Logging
 
@@ -97,21 +98,17 @@ All configuration is done through environment variables. Pass them via `docker r
 
 ---
 
-## Build Arguments
+## Upstream Source
 
-These `--build-arg` values control the Docker build stage:
+This packaging repository builds from a local checkout at `./penpot`.
 
-| Argument | Description | Default |
-|---|---|---|
-| `PENPOT_REPO` | Upstream repository to clone | `https://github.com/penpot/penpot.git` |
-| `PENPOT_BRANCH` | Branch to clone | `develop` |
-| `PENPOT_CLONE_DEPTH` | Git clone depth | `1` |
-
-Example to target the stable production branch:
+Expected bootstrap command:
 
 ```shell
-docker build --build-arg PENPOT_BRANCH=mcp-prod -t penpot-mcp:prod .
+git clone https://github.com/penpot/penpot.git --branch mcp-prod --depth 1 penpot
 ```
+
+CI and publish workflows will clone that checkout automatically if it is missing.
 
 ---
 
@@ -122,11 +119,10 @@ For deployments where the browser is not on the same machine as the container, s
 ```shell
 PENPOT_MCP_REMOTE_MODE=true
 PENPOT_MCP_SERVER_ADDRESS=your-server-hostname-or-ip
-PENPOT_MCP_PLUGIN_PUBLIC_URL=http://your-server-hostname-or-ip:4400
 PENPOT_MCP_PLUGIN_WEBSOCKET_URL=ws://your-server-hostname-or-ip:4402
 ```
 
-For TLS-terminated WebSocket traffic, set `PENPOT_MCP_WEBSOCKET_PROTOCOL=wss` and supply matching hostnames/ports.
+For TLS-terminated WebSocket traffic, set `PENPOT_MCP_PLUGIN_WEBSOCKET_URL=wss://your-server-hostname-or-ip:4402`.
 
 ---
 
@@ -158,9 +154,9 @@ volumes:
 .
 ├── Dockerfile                  # Multi-stage image build
 ├── compose.yaml                # Docker Compose configuration
+├── penpot/                     # Local upstream checkout from the mcp-prod branch
 ├── docker/
-│   ├── entrypoint.sh           # Runtime startup, manifest rendering, URL patching
-│   └── plugin-server.mjs       # Lightweight Node static file server
+│   └── entrypoint.sh           # Runtime startup for the upstream pnpm services
 ├── .github/
 │   └── workflows/
 │       ├── ci.yml              # Build + smoke test on pull requests
@@ -173,7 +169,7 @@ volumes:
 
 ## CI / CD
 
-- **`ci.yml`**: builds the image, starts the container, and checks that `manifest.json` is served, the four service ports are open, and that the WebSocket URL placeholder has been replaced.
+- **`ci.yml`**: ensures the `penpot/` checkout is present, builds the image, starts the container, and checks that `manifest.json`, `plugin.js`, and the exposed service ports are reachable.
 - **`docker-publish.yml`**: publishes multi-arch (`amd64` + `arm64`) images to the GitHub Container Registry (`ghcr.io`) on every push to `main` and on version tags (`v*`).
 
 ---

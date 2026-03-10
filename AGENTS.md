@@ -2,13 +2,12 @@
 
 ## Scope
 
-This repository is a packaging layer for Penpot MCP. It does not vendor the upstream Penpot source tree. The Docker build clones `penpot/penpot` from the configured branch, builds the MCP server and plugin, and assembles a runtime image around those artifacts.
+This repository is a packaging layer for Penpot MCP. It expects a local `penpot/` checkout cloned from `penpot/penpot` on the `mcp-prod` branch. The Docker build uses that local checkout, runs the upstream setup/bootstrap flow inside the image build, and assembles a runtime image around the `penpot/mcp` workspace.
 
 ## Critical Paths
 
-- `Dockerfile`: multi-stage build that clones and compiles the upstream `mcp` subtree.
-- `docker/entrypoint.sh`: maps environment variables into the runtime layout, renders `manifest.json`, patches the plugin WebSocket URL, and starts both processes.
-- `docker/plugin-server.mjs`: static server for the browser-loaded Penpot plugin.
+- `Dockerfile`: multi-stage build that copies the local `penpot/` checkout and runs `./scripts/setup` plus `pnpm run bootstrap` during build.
+- `docker/entrypoint.sh`: maps container environment variables to the upstream runtime environment and starts the upstream `pnpm` services.
 - `.github/workflows/ci.yml`: builds the image and verifies that the plugin manifest and service ports are reachable.
 - `.github/workflows/docker-publish.yml`: publishes the image to GHCR.
 
@@ -24,14 +23,12 @@ The image exposes four ports:
 The runtime supports the upstream environment variables documented in `penpot/mcp/README.md`, plus these packaging-specific values:
 
 - `PENPOT_MCP_PLUGIN_PORT`
-- `PENPOT_MCP_PLUGIN_PUBLIC_URL`
 - `PENPOT_MCP_PLUGIN_WEBSOCKET_URL`
 - `PENPOT_MCP_MULTI_USER_MODE`
-- `PENPOT_MCP_WEBSOCKET_PROTOCOL`
 
 ## Change Rules
 
 - Keep the image self-contained at runtime. Avoid adding package installs during container startup.
-- Preserve compatibility with upstream `develop` unless the change explicitly targets another branch.
-- If you change the plugin build, keep the runtime WebSocket URL patching behavior or replace it with an equivalent dynamic mechanism.
+- Preserve compatibility with upstream `mcp-prod` unless the change explicitly targets another branch.
+- If you change the plugin build or runtime startup, keep the container aligned with the upstream `./scripts/setup`, `pnpm run bootstrap`, and `pnpm run start` workflows.
 - Validate changes with `docker build` and a smoke run that checks `http://localhost:4400/manifest.json` plus TCP reachability on `4401`, `4402`, and `4403`.

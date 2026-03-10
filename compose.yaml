@@ -3,9 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        PENPOT_BRANCH: develop
-    image: penpot-mcp:develop
+    image: penpot-mcp:mcp-prod
     ports:
       - "4400:4400"
       - "4401:4401"
@@ -19,10 +17,9 @@ services:
       PENPOT_MCP_REPL_PORT: 4403
       PENPOT_MCP_PLUGIN_SERVER_LISTEN_ADDRESS: 0.0.0.0
       PENPOT_MCP_PLUGIN_PORT: 4400
-      PENPOT_MCP_PLUGIN_PUBLIC_URL: http://localhost:4400
       PENPOT_MCP_PLUGIN_WEBSOCKET_URL: ws://localhost:4402
       PENPOT_MCP_REMOTE_MODE: "true"
       PENPOT_MCP_MULTI_USER_MODE: "true"
       PENPOT_MCP_LOG_LEVEL: info
     volumes:
-      - ./logs:/opt/penpot-mcp/logs
+      - ./logs:/opt/penpot/mcp/logs
