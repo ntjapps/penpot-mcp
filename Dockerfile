@@ -13,7 +13,7 @@ COPY penpot/mcp /opt/penpot/mcp
 RUN test -f package.json && test -x scripts/setup
 
 RUN corepack enable \
-    && corepack prepare "$(node -p \"require('./package.json').packageManager.split('+')[0]\")" --activate
+    && corepack prepare "$(node -p 'require("./package.json").packageManager.split("+")[0]')" --activate
 
 RUN ./scripts/setup
 
@@ -48,7 +48,7 @@ COPY --from=build /opt/penpot/mcp /opt/penpot/mcp
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 RUN chmod +x /usr/local/bin/entrypoint.sh \
-    && corepack prepare "$(node -p \"require('/opt/penpot/mcp/package.json').packageManager.split('+')[0]\")" --activate \
+    && corepack prepare "$(node -p 'require("/opt/penpot/mcp/package.json").packageManager.split("+")[0]')" --activate \
     && mkdir -p /opt/penpot/mcp/logs
 
 EXPOSE 4400 4401 4402 4403
