@@ -1,0 +1,68 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  docker-smoke-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t penpot-mcp:test .
+
+      - name: Start container
+        run: |
+          docker run -d \
+            --name penpot-mcp \
+            -e PENPOT_MCP_REMOTE_MODE=true \
+            -p 4400:4400 \
+            -p 4401:4401 \
+            -p 4402:4402 \
+            -p 4403:4403 \
+            penpot-mcp:test
+
+      - name: Wait for startup
+        run: |
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:4400/manifest.json >/tmp/manifest.json; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs penpot-mcp
+          exit 1
+
+      - name: Verify exposed ports
+        run: |
+          for port in 4401 4402 4403; do
+            timeout 3 bash -lc "cat < /dev/null > /dev/tcp/127.0.0.1/${port}"
+          done
+
+      - name: Verify plugin manifest
+        run: |
+          grep -q 'Penpot MCP Plugin' /tmp/manifest.json
+          grep -q '"code":"/plugin.js"' <(tr -d '[:space:]' </tmp/manifest.json)
+
+      - name: Verify placeholder replacement
+        run: |
+          curl -fsS http://127.0.0.1:4400/index.js >/tmp/index.js
+          if grep -q '__PENPOT_MCP_WEBSOCKET_URL__' /tmp/index.js; then
+            echo "placeholder was not replaced"
+            exit 1
+          fi
+
+      - name: Show container logs on failure
+        if: failure()
+        run: docker logs penpot-mcp
+
+      - name: Stop container
+        if: always()
+        run: docker rm -f penpot-mcp || true
