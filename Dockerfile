@@ -2,15 +2,15 @@
 
 FROM node:22-bookworm-slim AS build
 
-WORKDIR /opt/penpot
+WORKDIR /opt/penpot/mcp
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends bash ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-COPY penpot /opt/penpot/penpot
+COPY penpot/mcp /opt/penpot/mcp
 
-WORKDIR /opt/penpot/penpot/mcp
+RUN test -f package.json && test -x scripts/setup
 
 RUN corepack enable
 
@@ -41,7 +41,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends bash ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=build /opt/penpot/penpot/mcp /opt/penpot/mcp
+COPY --from=build /opt/penpot/mcp /opt/penpot/mcp
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 RUN chmod +x /usr/local/bin/entrypoint.sh \

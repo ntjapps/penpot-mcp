@@ -1,7 +1,7 @@
 # penpot-mcp
 
 A Docker packaging layer for the [Penpot MCP Server](https://github.com/penpot/penpot/tree/develop/mcp).  
-This repository expects a local `penpot/` checkout from `https://github.com/penpot/penpot.git --branch mcp-prod --depth 1` and builds the upstream MCP workspace inside Docker.
+This repository vendors Penpot as the `penpot/` git submodule pinned to the `mcp-prod` branch and builds the upstream MCP workspace inside Docker.
 
 ---
 
@@ -38,8 +38,8 @@ The image build runs the upstream `./scripts/setup` and `pnpm run bootstrap` flo
 git clone https://github.com/<your-org>/penpot-mcp.git
 cd penpot-mcp
 
-# Clone the upstream Penpot source expected by this packaging repo
-git clone https://github.com/penpot/penpot.git --branch mcp-prod --depth 1 penpot
+# Initialize the upstream Penpot submodule
+git submodule update --init --recursive
 
 # Build and start with Docker Compose
 docker compose up --build
@@ -94,21 +94,22 @@ All configuration is done through environment variables. Pass them via `docker r
 | Variable | Description | Default |
 |---|---|---|
 | `PENPOT_MCP_LOG_LEVEL` | Log level (`trace`, `debug`, `info`, `warn`, `error`) | `info` |
-| `PENPOT_MCP_LOG_DIR` | Directory for log files | `/opt/penpot-mcp/logs` |
+| `PENPOT_MCP_LOG_DIR` | Directory for log files | `/opt/penpot/mcp/logs` |
 
 ---
 
 ## Upstream Source
 
-This packaging repository builds from a local checkout at `./penpot`.
+This packaging repository builds from the `./penpot` git submodule.
 
-Expected bootstrap command:
+Initialize or refresh it with:
 
 ```shell
-git clone https://github.com/penpot/penpot.git --branch mcp-prod --depth 1 penpot
+git submodule update --init --recursive
+git submodule update --remote penpot
 ```
 
-CI and publish workflows will clone that checkout automatically if it is missing.
+GitHub Actions initializes the submodule during checkout.
 
 ---
 
@@ -139,11 +140,11 @@ For TLS-terminated WebSocket traffic, set `PENPOT_MCP_PLUGIN_WEBSOCKET_URL=wss:/
 
 ## Volumes
 
-Mount a host directory at `/opt/penpot-mcp/logs` to persist log files:
+Mount a host directory at `/opt/penpot/mcp/logs` to persist log files:
 
 ```yaml
 volumes:
-  - ./logs:/opt/penpot-mcp/logs
+  - ./logs:/opt/penpot/mcp/logs
 ```
 
 ---
@@ -154,7 +155,7 @@ volumes:
 .
 ├── Dockerfile                  # Multi-stage image build
 ├── compose.yaml                # Docker Compose configuration
-├── penpot/                     # Local upstream checkout from the mcp-prod branch
+├── penpot/                     # Git submodule pinned to the upstream mcp-prod branch
 ├── docker/
 │   └── entrypoint.sh           # Runtime startup for the upstream pnpm services
 ├── .github/
@@ -169,7 +170,7 @@ volumes:
 
 ## CI / CD
 
-- **`ci.yml`**: ensures the `penpot/` checkout is present, builds the image, starts the container, and checks that `manifest.json`, `plugin.js`, and the exposed service ports are reachable.
+- **`ci.yml`**: checks out the `penpot/` submodule, builds the image, starts the container, and checks that `manifest.json`, `plugin.js`, and the exposed service ports are reachable.
 - **`docker-publish.yml`**: publishes multi-arch (`amd64` + `arm64`) images to the GitHub Container Registry (`ghcr.io`) on every push to `main` and on version tags (`v*`).
 
 ---

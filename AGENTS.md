@@ -2,11 +2,11 @@
 
 ## Scope
 
-This repository is a packaging layer for Penpot MCP. It expects a local `penpot/` checkout cloned from `penpot/penpot` on the `mcp-prod` branch. The Docker build uses that local checkout, runs the upstream setup/bootstrap flow inside the image build, and assembles a runtime image around the `penpot/mcp` workspace.
+This repository is a packaging layer for Penpot MCP. It expects the `penpot/` git submodule to be initialized from `penpot/penpot` on the `mcp-prod` branch. The Docker build uses that submodule, runs the upstream setup/bootstrap flow inside the image build, and assembles a runtime image around the `penpot/mcp` workspace.
 
 ## Critical Paths
 
-- `Dockerfile`: multi-stage build that copies the local `penpot/` checkout and runs `./scripts/setup` plus `pnpm run bootstrap` during build.
+- `Dockerfile`: multi-stage build that copies the local `penpot/mcp` submodule content and runs `./scripts/setup` plus `pnpm run bootstrap` during build.
 - `docker/entrypoint.sh`: maps container environment variables to the upstream runtime environment and starts the upstream `pnpm` services.
 - `.github/workflows/ci.yml`: builds the image and verifies that the plugin manifest and service ports are reachable.
 - `.github/workflows/docker-publish.yml`: publishes the image to GHCR.

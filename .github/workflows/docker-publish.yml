@@ -19,12 +19,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Ensure upstream Penpot checkout
-        run: |
-          if [ ! -d penpot/mcp ]; then
-            git clone https://github.com/penpot/penpot.git --branch mcp-prod --depth 1 penpot
-          fi
+        with:
+          submodules: recursive
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
