@@ -2,7 +2,7 @@
 
 ## Scope
 
-This repository is a packaging layer for Penpot MCP. It expects the `penpot/` git submodule to be initialized from `penpot/penpot` on the `mcp-prod` branch. The Docker build uses that submodule, runs the upstream setup/bootstrap flow inside the image build, and assembles a runtime image around the `penpot/mcp` workspace.
+This repository is a packaging layer for Penpot MCP. It expects the `penpot/` git submodule to be initialized from `penpot/penpot` on the `develop` branch. The Docker build uses that submodule, runs the upstream setup/bootstrap flow inside the image build, and assembles a runtime image around the `penpot/mcp` workspace.
 
 ## Critical Paths
 
@@ -29,6 +29,6 @@ The runtime supports the upstream environment variables documented in `penpot/mc
 ## Change Rules
 
 - Keep the image self-contained at runtime. Avoid adding package installs during container startup.
-- Preserve compatibility with upstream `mcp-prod` unless the change explicitly targets another branch.
+- Preserve compatibility with upstream `develop` unless the change explicitly targets another branch.
 - If you change the plugin build or runtime startup, keep the container aligned with the upstream `./scripts/setup`, `pnpm run bootstrap`, and `pnpm run start` workflows.
 - Validate changes with `docker build` and a smoke run that checks `http://localhost:4400/manifest.json` plus TCP reachability on `4401`, `4402`, and `4403`.

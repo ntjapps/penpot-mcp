@@ -1,7 +1,7 @@
 # penpot-mcp
 
 A Docker packaging layer for the [Penpot MCP Server](https://github.com/penpot/penpot/tree/develop/mcp).  
-This repository vendors Penpot as the `penpot/` git submodule pinned to the `mcp-prod` branch and builds the upstream MCP workspace inside Docker.
+This repository vendors Penpot as the `penpot/` git submodule pinned to the `develop` branch and builds the upstream MCP workspace inside Docker.
 
 ---
 
@@ -112,6 +112,12 @@ git submodule update --init --recursive
 git submodule update --remote penpot
 ```
 
+If you need to re-sync the configured branch locally after pulling this change, run:
+
+```shell
+git submodule sync -- penpot
+```
+
 GitHub Actions initializes the submodule during checkout.
 
 ---
@@ -159,7 +165,7 @@ volumes:
 .
 ├── Dockerfile                  # Multi-stage image build
 ├── compose.yaml                # Docker Compose configuration
-├── penpot/                     # Git submodule pinned to the upstream mcp-prod branch
+├── penpot/                     # Git submodule pinned to the upstream develop branch
 ├── docker/
 │   └── entrypoint.sh           # Runtime startup for the upstream pnpm services
 ├── .github/

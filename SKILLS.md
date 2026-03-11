@@ -2,7 +2,7 @@
 
 ## Build The Image
 
-Use the root `Dockerfile`. It expects the local `./penpot` git submodule from the upstream `mcp-prod` branch, copies `penpot/mcp` into the build context, runs `./scripts/setup`, runs the upstream build commands, and invokes `pnpm run bootstrap` during image build.
+Use the root `Dockerfile`. It expects the local `./penpot` git submodule from the upstream `develop` branch, copies `penpot/mcp` into the build context, runs `./scripts/setup`, runs the upstream build commands, and invokes `pnpm run bootstrap` during image build.
 
 ## Run The Container
 
