@@ -63,6 +63,8 @@ Once running, load the plugin in Penpot:
    # http://localhost:4401/sse
    ```
 
+If you use hosted Penpot (`https://design.penpot.app`), your plugin endpoint must be HTTPS and your plugin WebSocket endpoint must be WSS. A plain local `ws://localhost:4402` endpoint is not usable from hosted Penpot.
+
 ---
 
 ## Configuration
@@ -134,6 +136,14 @@ PENPOT_MCP_PLUGIN_WEBSOCKET_PATH=/ws
 ```
 
 With that configuration, the container derives `wss://your-domain/ws` automatically. If you only set `PENPOT_MCP_REMOTE_MODE=true` and `PENPOT_MCP_SERVER_ADDRESS=your-domain`, it falls back to `wss://your-domain`. If your public WebSocket endpoint is different, set `PENPOT_MCP_PLUGIN_WEBSOCKET_URL` explicitly.
+
+---
+
+## Troubleshooting
+
+- `WebSocket connection to 'wss://...' failed`: this is the critical error. Set `PENPOT_MCP_PLUGIN_WEBSOCKET_URL` to the exact reachable endpoint (for example `wss://your-domain/ws` behind a reverse proxy, or `wss://your-domain:4402` if you expose the WebSocket port directly).
+- `net::ERR_BLOCKED_BY_CLIENT` for Matomo or GTM: caused by browser privacy/ad blockers and usually harmless for MCP connectivity.
+- `GET https://design.penpot.app/css/ui.css ... 404`: usually a hosted Penpot asset/version issue and not caused by this container.
 
 ---
 
