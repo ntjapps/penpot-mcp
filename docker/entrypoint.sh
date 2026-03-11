@@ -12,6 +12,7 @@ export PENPOT_MCP_SERVER_ADDRESS="${PENPOT_MCP_SERVER_ADDRESS:-localhost}"
 export PENPOT_MCP_PLUGIN_PUBLIC_URL="${PENPOT_MCP_PLUGIN_PUBLIC_URL:-}"
 export PENPOT_MCP_PLUGIN_WEBSOCKET_PATH="${PENPOT_MCP_PLUGIN_WEBSOCKET_PATH:-}"
 export PENPOT_MCP_PLUGIN_ALLOWED_HOSTS="${PENPOT_MCP_PLUGIN_ALLOWED_HOSTS:-${PENPOT_MCP_SERVER_ADDRESS}}"
+export PENPOT_MCP_REMOTE_MODE="${PENPOT_MCP_REMOTE_MODE:-false}"
 export PENPOT_MCP_MULTI_USER_MODE="${PENPOT_MCP_MULTI_USER_MODE:-true}"
 export PENPOT_MCP_LOG_DIR="${PENPOT_MCP_LOG_DIR:-/opt/penpot/mcp/logs}"
 
@@ -38,6 +39,9 @@ if [[ -z "${PENPOT_MCP_PLUGIN_WEBSOCKET_URL:-}" ]]; then
             websocket_host="${public_location%%/*}"
             websocket_port=""
         fi
+    elif [[ "$PENPOT_MCP_REMOTE_MODE" == "true" ]]; then
+        websocket_scheme="wss"
+        websocket_port=""
     fi
 
     export PENPOT_MCP_PLUGIN_WEBSOCKET_URL="${websocket_scheme}://${websocket_host}${websocket_port}${PENPOT_MCP_PLUGIN_WEBSOCKET_PATH}"

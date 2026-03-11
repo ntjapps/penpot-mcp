@@ -90,7 +90,7 @@ All configuration is done through environment variables. Pass them via `docker r
 | `PENPOT_MCP_PLUGIN_PUBLIC_URL` | Public manifest URL used to derive the external plugin host and protocol when no explicit WebSocket URL is set | unset |
 | `PENPOT_MCP_PLUGIN_WEBSOCKET_PATH` | Path appended to the derived public WebSocket URL for reverse proxies such as Traefik | empty |
 | `PENPOT_MCP_PLUGIN_ALLOWED_HOSTS` | Comma-separated hostnames allowed by the Vite preview server; defaults to `PENPOT_MCP_SERVER_ADDRESS` | same as `PENPOT_MCP_SERVER_ADDRESS` |
-| `PENPOT_MCP_PLUGIN_WEBSOCKET_URL` | WebSocket URL embedded in the plugin UI; overrides public-URL-based derivation | `ws://localhost:4402` |
+| `PENPOT_MCP_PLUGIN_WEBSOCKET_URL` | WebSocket URL embedded in the plugin UI; overrides public-URL-based derivation | `ws://localhost:4402`, or `wss://<PENPOT_MCP_SERVER_ADDRESS>` when `PENPOT_MCP_REMOTE_MODE=true` |
 
 ### Logging
 
@@ -127,7 +127,7 @@ PENPOT_MCP_PLUGIN_PUBLIC_URL=https://your-domain/penpot-plugin/manifest.json
 PENPOT_MCP_PLUGIN_WEBSOCKET_PATH=/ws
 ```
 
-With that configuration, the container derives `wss://your-domain/ws` automatically. If your public WebSocket endpoint is different, set `PENPOT_MCP_PLUGIN_WEBSOCKET_URL` explicitly.
+With that configuration, the container derives `wss://your-domain/ws` automatically. If you only set `PENPOT_MCP_REMOTE_MODE=true` and `PENPOT_MCP_SERVER_ADDRESS=your-domain`, it falls back to `wss://your-domain`. If your public WebSocket endpoint is different, set `PENPOT_MCP_PLUGIN_WEBSOCKET_URL` explicitly.
 
 ---
 
