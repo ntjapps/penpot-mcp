@@ -87,6 +87,7 @@ All configuration is done through environment variables. Pass them via `docker r
 |---|---|---|
 | `PENPOT_MCP_PLUGIN_SERVER_LISTEN_ADDRESS` | Bind address for the plugin HTTP server | `0.0.0.0` |
 | `PENPOT_MCP_PLUGIN_PORT` | Plugin static server port | `4400` |
+| `PENPOT_MCP_PLUGIN_ALLOWED_HOSTS` | Comma-separated hostnames allowed by the Vite preview server; defaults to `PENPOT_MCP_SERVER_ADDRESS` | same as `PENPOT_MCP_SERVER_ADDRESS` |
 | `PENPOT_MCP_PLUGIN_WEBSOCKET_URL` | WebSocket URL embedded in the plugin UI | `ws://localhost:4402` |
 
 ### Logging

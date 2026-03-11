@@ -1,4 +1,4 @@
 [submodule "penpot"]
 	path = penpot
-	url = https://github.com/penpot/penpot.git
+	url = https://github.com/ntjapps/penpot.git
 	branch = mcp-prod
