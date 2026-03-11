@@ -34,7 +34,7 @@ ENV NODE_ENV=production \
     PENPOT_MCP_PLUGIN_PORT=4400 \
     PENPOT_MCP_SERVER_ADDRESS=localhost \
     PENPOT_MCP_REMOTE_MODE=false \
-    PENPOT_MCP_MULTI_USER_MODE=true \
+    PENPOT_MCP_MULTI_USER_MODE=false \
     PENPOT_MCP_LOG_LEVEL=info \
     PENPOT_MCP_LOG_DIR=/opt/penpot/mcp/logs
 

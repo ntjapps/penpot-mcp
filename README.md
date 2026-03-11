@@ -79,7 +79,7 @@ All configuration is done through environment variables. Pass them via `docker r
 | `PENPOT_MCP_REPL_PORT` | REPL port | `4403` |
 | `PENPOT_MCP_SERVER_ADDRESS` | Hostname used when computing WebSocket URL | `localhost` |
 | `PENPOT_MCP_REMOTE_MODE` | Disable local filesystem access (`true`/`false`) | `false` |
-| `PENPOT_MCP_MULTI_USER_MODE` | Enable multi-user token-based auth (`true`/`false`) | `true` |
+| `PENPOT_MCP_MULTI_USER_MODE` | Enable multi-user token-based auth (`true`/`false`) | `false` |
 
 ### Plugin server
 
