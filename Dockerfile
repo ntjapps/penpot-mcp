@@ -26,6 +26,8 @@ RUN set -eux; \
     pnpm --version
 
 COPY penpot/mcp /opt/penpot/mcp
+# packages/plugin links @penpot/plugin-types from ../../../plugins/libs/plugin-types (outside mcp/).
+COPY penpot/plugins/libs/plugin-types /opt/penpot/plugins/libs/plugin-types
 
 RUN test -f package.json && test -x scripts/setup
 
@@ -57,6 +59,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /usr/local/bin/pnpm /usr/local/bin/pnpm
+COPY --from=build /opt/penpot/plugins/libs/plugin-types /opt/penpot/plugins/libs/plugin-types
 COPY --from=build /opt/penpot/mcp /opt/penpot/mcp
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 
