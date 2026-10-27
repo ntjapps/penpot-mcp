@@ -79,6 +79,8 @@ All configuration is done through environment variables. Pass them via `docker r
 | `PENPOT_MCP_SERVER_PORT` | MCP HTTP/SSE port | `4401` |
 | `PENPOT_MCP_WEBSOCKET_PORT` | Plugin WebSocket port | `4402` |
 | `PENPOT_MCP_REPL_PORT` | REPL port | `4403` |
+| `PENPOT_MCP_REPL_ENABLE` | Start the REPL server (`true`/`false`); upstream never starts it in multi-user mode. Keep 4403 unpublished | `true` |
+| `PENPOT_MCP_REPL_HOST` | Bind address for the REPL server | `0.0.0.0` |
 | `PENPOT_MCP_SERVER_ADDRESS` | Hostname used when computing WebSocket URL | `localhost` |
 | `PENPOT_MCP_REMOTE_MODE` | Disable local filesystem access (`true`/`false`) | `false` |
 | `PENPOT_MCP_MULTI_USER_MODE` | Enable multi-user token-based auth (`true`/`false`) | `false` |
@@ -87,7 +89,7 @@ All configuration is done through environment variables. Pass them via `docker r
 
 | Variable | Description | Default |
 |---|---|---|
-| `PENPOT_MCP_PLUGIN_SERVER_LISTEN_ADDRESS` | Bind address for the plugin HTTP server | `0.0.0.0` |
+| `PENPOT_MCP_PLUGIN_SERVER_LISTEN_ADDRESS` | Bind address for the plugin HTTP server (passed to upstream as `PENPOT_MCP_PLUGIN_SERVER_HOST`, which wins when set) | `0.0.0.0` |
 | `PENPOT_MCP_PLUGIN_PORT` | Plugin static server port | `4400` |
 | `PENPOT_MCP_PLUGIN_PUBLIC_URL` | Public manifest URL used to derive the external plugin host and protocol when no explicit WebSocket URL is set | unset |
 | `PENPOT_MCP_PLUGIN_WEBSOCKET_PATH` | Path appended to the derived public WebSocket URL for reverse proxies such as Traefik | empty |
